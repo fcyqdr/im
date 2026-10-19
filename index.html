@@ -8,121 +8,114 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* 默认主题：赛博矩阵 (Cyber Matrix) - 微立体风格 */
+        /* 科技可视化大屏主题 (HUD Cyber Theme) */
         :root {
-            --bg-main: #0c0c0e;
-            --bg-panel: #16161a;
-            --bg-sidebar: #101013;
-            --border-color: #262630;
-            --accent-color: #00ff66;
-            --accent-glow: rgba(0, 255, 102, 0.25);
-            --text-main: #f0f0f5;
-            --text-muted: #78788c;
-            --msg-incoming: #1e1e24;
-            --msg-incoming-shadow: 4px 4px 10px #08080a, -2px -2px 6px #24242e;
-            --msg-outgoing: #004d2c;
-            --msg-outgoing-text: #00ff66;
-            --msg-outgoing-shadow: 4px 4px 10px #002213, -2px -2px 6px #007845;
-            --panel-shadow: 8px 8px 20px #060608, -6px -6px 20px #1c1c22;
+            --bg-main: #050b14;
+            --bg-panel: #0a1628;
+            --bg-sidebar: #07101e;
+            --border-color: #00ffcc55;
+            --border-glow: #00ffcc;
+            --accent-color: #00ffcc;
+            --accent-glow: rgba(0, 255, 204, 0.4);
+            --text-main: #e0fbfc;
+            --text-muted: #6b8ba4;
+            --msg-incoming: #0d2137;
+            --msg-outgoing: #004d40;
+            --msg-outgoing-text: #00ffcc;
+            --panel-shadow: 0 0 25px rgba(0, 255, 204, 0.15), inset 0 0 15px rgba(0, 255, 204, 0.05);
         }
 
-        /* 主题二：离岸极简 (Offshore Minimal) */
         body.theme-minimal {
-            --bg-main: #0f1115;
-            --bg-panel: #161b22;
-            --bg-sidebar: #0d1117;
-            --border-color: #30363d;
-            --accent-color: #2f81f7;
-            --accent-glow: rgba(47, 129, 247, 0.25);
-            --text-main: #e6edf3;
-            --text-muted: #8b949e;
-            --msg-incoming: #21262d;
-            --msg-incoming-shadow: 4px 4px 10px #0b0d10, -2px -2px 6px #373f4a;
-            --msg-outgoing: #1f6feb;
-            --msg-outgoing-text: #ffffff;
-            --msg-outgoing-shadow: 4px 4px 10px #0d3880, -2px -2px 6px #3182ff;
-            --panel-shadow: 8px 8px 20px #080a0e, -6px -6px 20px #242c36;
+            --bg-main: #121212; --bg-panel: #1a1a1a; --bg-sidebar: #161616;
+            --border-color: #2f81f755; --border-glow: #2f81f7; --accent-color: #2f81f7;
+            --accent-glow: rgba(47, 129, 247, 0.4); --text-main: #e6edf3; --text-muted: #8b949e;
         }
 
-        /* 主题三：炽烈战术 (Tactical Amber) */
         body.theme-amber {
-            --bg-main: #0d0800;
-            --bg-panel: #161200;
-            --bg-sidebar: #100d00;
-            --border-color: #332600;
-            --accent-color: #ffb700;
-            --accent-glow: rgba(255, 183, 0, 0.25);
-            --text-main: #ffe6b3;
-            --text-muted: #997a00;
-            --msg-incoming: #261f00;
-            --msg-incoming-shadow: 4px 4px 10px #050400, -2px -2px 6px #3d3100;
-            --msg-outgoing: #664d00;
-            --msg-outgoing-text: #ffe6b3;
-            --msg-outgoing-shadow: 4px 4px 10px #261f00, -2px -2px 6px #a37a00;
-            --panel-shadow: 8px 8px 20px #050400, -6px -6px 20px #261f00;
+            --bg-main: #0d0800; --bg-panel: #1a1200; --bg-sidebar: #120d00;
+            --border-color: #ffb70055; --border-glow: #ffb700; --accent-color: #ffb700;
+            --accent-glow: rgba(255, 183, 0, 0.4); --text-main: #ffe6b3; --text-muted: #997a00;
         }
 
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; transition: background 0.3s; }
         
-        .container { width: 100%; max-width: 420px; height: 100%; background: var(--bg-panel); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: var(--panel-shadow); border: 1px solid var(--border-color); border-radius: 16px; }
+        .container { width: 100%; max-width: 440px; height: 100%; background: var(--bg-panel); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: var(--panel-shadow); border: 2px solid var(--border-color); border-radius: 12px; }
 
-        /* 计算器界面 */
-        #calc-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 18px; justify-content: flex-end; background: #121212; z-index: 5; }
-        .display { background: #18181c; height: 110px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 15px; margin-bottom: 20px; border: 1px solid #2a2a30; box-shadow: inset 4px 4px 8px #0a0a0c, inset -4px -4px 8px #26262e; }
-        .history { font-size: 15px; color: #777; margin-bottom: 4px; min-height: 18px; }
-        .output { font-size: 38px; font-weight: bold; color: #fff; }
+        /* 计算器界面 (确保 z-index 最高且 pointer-events 正常) */
+        #calc-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; padding: 20px; justify-content: flex-end; background: var(--bg-main); z-index: 100; }
+        .display { background: var(--bg-panel); height: 110px; border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 15px; margin-bottom: 20px; border: 1px solid var(--border-color); box-shadow: inset 0 0 10px rgba(0,0,0,0.8); }
+        .history { font-size: 15px; color: var(--text-muted); margin-bottom: 4px; min-height: 18px; }
+        .output { font-size: 38px; font-weight: bold; color: var(--accent-color); text-shadow: 0 0 10px var(--accent-glow); }
         
         .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 10px; }
-        button.key { background: #222228; color: #fff; border: none; border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; box-shadow: 4px 4px 10px #0e0e12, -2px -2px 6px #363642; transition: all 0.1s; position: relative; z-index: 6; }
-        button.key:active { box-shadow: inset 3px 3px 6px #0e0e12, inset -3px -3px 6px #363642; transform: scale(0.96); }
-        button.operator { background: #ff9f0a; color: #fff; box-shadow: 4px 4px 10px #7a4c00, -2px -2px 6px #ffbe4d; }
-        button.function { background: #d4d4d2; color: #000; box-shadow: 4px 4px 10px #666664, -2px -2px 6px #ffffff; }
-        button.zero { grid-column: span 2; width: 144px; border-radius: 33px; }
+        button.key { background: var(--bg-sidebar); color: var(--text-main); border: 1px solid var(--border-color); border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 10px rgba(0,0,0,0.5); transition: all 0.1s; position: relative; z-index: 101; }
+        button.key:active { background: var(--accent-color); color: #000; transform: scale(0.95); }
+        button.operator { background: rgba(0, 255, 204, 0.15); color: var(--accent-color); border-color: var(--accent-color); }
+        button.function { background: rgba(255,255,255,0.05); color: var(--text-muted); }
+        button.zero { grid-column: span 2; width: 144px; border-radius: 30px; }
 
         /* 秘密系统总舱 */
-        #secret-system { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; background: var(--bg-main); overflow: hidden; z-index: 10; }
+        #secret-system { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; flex-direction: column; background: var(--bg-main); overflow: hidden; z-index: 50; }
         
         /* 登录/注册面板 */
-        #auth-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-panel); z-index: 20; display: flex; flex-direction: column; justify-content: center; padding: 35px; gap: 18px; }
-        #auth-panel h2 { text-align: center; color: var(--accent-color); font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; text-shadow: 0 0 10px var(--accent-glow); }
+        #auth-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-panel); z-index: 60; display: flex; flex-direction: column; justify-content: center; padding: 35px; gap: 18px; }
+        #auth-panel h2 { text-align: center; color: var(--accent-color); font-size: 20px; letter-spacing: 2px; margin-bottom: 5px; text-shadow: 0 0 12px var(--accent-glow); }
         .tab-group { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         .tab-btn { font-size: 15px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 6px; transition: color 0.2s; }
         .tab-btn.active { color: var(--accent-color); border-color: var(--accent-color); font-weight: bold; }
 
         .input-group { display: flex; flex-direction: column; gap: 6px; }
-        .input-group label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 10px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; box-shadow: inset 3px 3px 6px #060608, inset -3px -3px 6px #1e1e24; }
-        .input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 8px var(--accent-glow), inset 3px 3px 6px #060608; }
+        .input-group label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
+        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 8px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; }
+        .input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 10px var(--accent-glow); }
         
-        .btn-primary { background: var(--accent-color); color: #000; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; box-shadow: 4px 4px 10px rgba(0,0,0,0.4), -2px -2px 6px var(--accent-glow); }
+        .btn-primary { background: var(--accent-color); color: #050b14; border: none; border-radius: 8px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; box-shadow: 0 0 15px var(--accent-glow); }
 
         /* 顶部统一控制栏 */
-        .system-header { background: var(--bg-panel); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
+        .system-header { background: var(--bg-panel); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); z-index: 10; }
         .header-left { display: flex; align-items: center; gap: 8px; }
-        .system-header h3 { font-size: 13px; color: var(--accent-color); font-weight: bold; letter-spacing: 0.5px; }
+        .system-header h3 { font-size: 13px; color: var(--accent-color); font-weight: bold; letter-spacing: 1px; text-shadow: 0 0 8px var(--accent-glow); }
         .header-tools { display: flex; align-items: center; gap: 8px; }
 
         .theme-selector { display: flex; gap: 5px; }
-        .theme-dot { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: 1px solid #fff4; }
-        .theme-dot.d1 { background: #00ff66; }
+        .theme-dot { width: 14px; height: 14px; border-radius: 50%; cursor: pointer; border: 1px solid var(--border-color); }
+        .theme-dot.d1 { background: #00ffcc; }
         .theme-dot.d2 { background: #2f81f7; }
         .theme-dot.d3 { background: #ffb700; }
 
-        .btn-sm { background: var(--border-color); color: var(--text-main); border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; }
-        .btn-danger { background: #3d1414; color: #ff6b6b; }
-        .btn-back { background: var(--border-color); color: var(--accent-color); font-weight: bold; display: none; }
+        .btn-sm { background: var(--bg-sidebar); color: var(--text-main); border: 1px solid var(--border-color); padding: 4px 8px; border-radius: 4px; cursor: pointer; font-size: 11px; }
+        .btn-danger { border-color: #ff3b30; color: #ff6b6b; }
+        .btn-back { color: var(--accent-color); font-weight: bold; display: none; }
 
         /* 主视口区域 */
         .system-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
 
-        /* 1. 九宫格指挥舱仪表盘 (Dashboard) */
-        #dashboard-view { flex: 1; padding: 20px; display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(3, 1fr); gap: 15px; background: var(--bg-main); overflow-y: auto; }
-        .dash-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 14px; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; box-shadow: 6px 6px 14px #060608, -4px -4px 10px #1c1c22; transition: transform 0.1s, border-color 0.2s; }
-        .dash-card:active { transform: scale(0.97); }
-        .dash-card:hover { border-color: var(--accent-color); }
-        .dash-card-icon { font-size: 26px; }
-        .dash-card-title { font-size: 14px; font-weight: bold; color: var(--text-main); margin-top: 6px; }
-        .dash-card-desc { font-size: 11px; color: var(--text-muted); }
+        /* 🌟 核心：赛博大屏智慧城市风九宫格 (Dashboard) */
+        #dashboard-view { flex: 1; padding: 15px; display: flex; flex-direction: column; justify-content: space-between; background: var(--bg-main); overflow-y: auto; position: relative; }
+        
+        .hud-banner { text-align: center; border: 1px solid var(--border-color); padding: 8px; background: rgba(0,255,204,0.03); font-size: 11px; letter-spacing: 2px; color: var(--accent-color); text-shadow: 0 0 8px var(--accent-glow); margin-bottom: 10px; }
+
+        .hud-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, 1fr); gap: 12px; flex: 1; min-height: 240px; }
+        
+        .hud-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; position: relative; overflow: hidden; box-shadow: inset 0 0 15px rgba(0,255,204,0.03); transition: all 0.2s; }
+        .hud-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-color); box-shadow: 0 0 8px var(--accent-glow); }
+        .hud-card:hover { border-color: var(--accent-color); box-shadow: 0 0 15px var(--accent-glow); transform: translateY(-2px); }
+        
+        .hud-card-title { font-size: 14px; font-weight: bold; color: var(--text-main); letter-spacing: 1px; }
+        .hud-card-sub { font-size: 10px; color: var(--text-muted); }
+        .hud-card-icon { font-size: 22px; align-self: flex-end; filter: drop-shadow(0 0 5px var(--accent-glow)); }
+
+        /* 中间雷达/罗盘旋转中心装饰 */
+        .hud-center-radar { display: flex; justify-content: center; align-items: center; padding: 8px 0; }
+        .radar-badge { width: 90px; height: 90px; border: 2px dashed var(--border-color); border-radius: 50%; display: flex; justify-content: center; align-items: center; position: relative; animation: radarSpin 12s linear infinite; box-shadow: 0 0 15px var(--accent-glow); background: rgba(0,255,204,0.02); cursor: pointer; }
+        .radar-inner { font-size: 11px; font-weight: bold; color: var(--accent-color); text-align: center; text-shadow: 0 0 6px var(--accent-glow); animation: radarSpinReverse 12s linear infinite; }
+        
+        @keyframes radarSpin { 100% { transform: rotate(360deg); } }
+        @keyframes radarSpinReverse { 100% { transform: rotate(-360deg); } }
+
+        .hud-bottom-bar { display: flex; justify-content: space-around; padding-top: 8px; border-top: 1px dashed var(--border-color); }
+        .hud-icon-btn { font-size: 18px; cursor: pointer; padding: 6px; opacity: 0.8; transition: opacity 0.2s; }
+        .hud-icon-btn:hover { opacity: 1; text-shadow: 0 0 8px var(--accent-glow); }
 
         /* 2. 聊天子视图 */
         #chat-view { display: none; flex: 1; flex-direction: column; overflow: hidden; }
@@ -135,20 +128,20 @@
 
         .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); }
         .chat-messages { flex: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
-        .message { max-width: 82%; padding: 10px 14px; border-radius: 12px; font-size: 13px; line-height: 1.4; word-break: break-all; position: relative; cursor: pointer; }
-        .message.incoming { background: var(--msg-incoming); align-self: flex-start; color: var(--text-main); border-bottom-left-radius: 4px; box-shadow: var(--msg-incoming-shadow); border: 1px solid var(--border-color); }
-        .message.outgoing { background: var(--msg-outgoing); align-self: flex-end; color: var(--msg-outgoing-text); border-bottom-right-radius: 4px; box-shadow: var(--msg-outgoing-shadow); border: 1px solid rgba(255,255,255,0.1); }
+        .message { max-width: 82%; padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.4; word-break: break-all; position: relative; cursor: pointer; border: 1px solid var(--border-color); }
+        .message.incoming { background: var(--msg-incoming); align-self: flex-start; color: var(--text-main); border-bottom-left-radius: 2px; }
+        .message.outgoing { background: var(--msg-outgoing); align-self: flex-end; color: var(--msg-outgoing-text); border-bottom-right-radius: 2px; }
         .message::after { content: "🔥双击双方烧毁"; position: absolute; bottom: -14px; right: 4px; font-size: 8px; color: var(--text-muted); opacity: 0; pointer-events: none; }
         .message:hover::after { opacity: 0.7; }
         
         .chat-input-area { padding: 10px; background: var(--bg-panel); display: flex; gap: 8px; border-top: 1px solid var(--border-color); align-items: center; }
-        .chat-input-area input { flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 18px; padding: 8px 14px; color: var(--text-main); font-size: 13px; outline: none; box-shadow: inset 2px 2px 5px #060608; }
-        .chat-input-area button { background: var(--accent-color); color: #000; border: none; border-radius: 18px; padding: 0 14px; height: 34px; font-weight: bold; cursor: pointer; font-size: 12px; }
+        .chat-input-area input { flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 6px; padding: 8px 14px; color: var(--text-main); font-size: 13px; outline: none; }
+        .chat-input-area button { background: var(--accent-color); color: #050b14; border: none; border-radius: 6px; padding: 0 14px; height: 34px; font-weight: bold; cursor: pointer; font-size: 12px; box-shadow: 0 0 8px var(--accent-glow); }
 
-        /* 3. 通用副面板通用样式 */
+        /* 3. 通用副面板样式 */
         .sub-panel-view { display: none; flex: 1; padding: 20px; flex-direction: column; gap: 15px; background: var(--bg-main); overflow-y: auto; }
-        .sub-panel-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); }
-        .sub-panel-card h4 { color: var(--accent-color); font-size: 14px; margin-bottom: 8px; }
+        .sub-panel-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; box-shadow: inset 0 0 10px rgba(0,255,204,0.03); }
+        .sub-panel-card h4 { color: var(--accent-color); font-size: 14px; margin-bottom: 8px; text-shadow: 0 0 6px var(--accent-glow); }
         .sub-panel-card p { font-size: 12px; color: var(--text-muted); line-height: 1.5; }
     </style>
 </head>
@@ -201,14 +194,14 @@
                 <label>访问安全密码</label>
                 <input type="password" id="passwordInput" placeholder="输入密码">
             </div>
-            <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">接入系统</button>
+            <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">接入指挥舱</button>
         </div>
 
         <!-- 顶部统一控制栏 -->
         <div class="system-header">
             <div class="header-left">
                 <button class="btn-sm btn-back" id="backDashboardBtn" onclick="showDashboard()">◀ 主舱</button>
-                <h3 id="panelTitle">🛡️ 仪表盘总控</h3>
+                <h3 id="panelTitle">🛡️ 离岸指挥系统</h3>
             </div>
             <div class="header-tools">
                 <div class="theme-selector">
@@ -216,55 +209,60 @@
                     <div class="theme-dot d2" onclick="setTheme('minimal')" title="离岸极简"></div>
                     <div class="theme-dot d3" onclick="setTheme('amber')" title="炽烈战术"></div>
                 </div>
-                <button class="btn-sm btn-danger" onclick="lockApp()">锁定伪装</button>
+                <button class="btn-sm btn-danger" onclick="lockApp()">锁定</button>
             </div>
         </div>
 
         <!-- 主视口内容区 -->
         <div class="system-body">
-            <!-- 视图 A：九宫格指挥舱 (Dashboard) -->
+            <!-- 🌟 视图 A：科技感大屏智慧风指挥中心 (Dashboard) -->
             <div id="dashboard-view">
-                <div class="dash-card" onclick="openModule('chat')">
-                    <div class="dash-card-icon">💬</div>
-                    <div>
-                        <div class="dash-card-title">加密信道</div>
-                        <div class="dash-card-desc">1对1端到端密聊与双向焚烧</div>
+                <div class="hud-banner">⚡ SHADOW SENTINEL - OFFSHORE COMMAND HUD ⚡</div>
+                
+                <div class="hud-grid">
+                    <div class="hud-card" onclick="openModule('chat')">
+                        <div>
+                            <div class="hud-card-title">加密信道</div>
+                            <div class="hud-card-sub">Secure Chat / 1v1</div>
+                        </div>
+                        <div class="hud-card-icon">💬</div>
+                    </div>
+                    <div class="hud-card" onclick="openModule('assets')">
+                        <div>
+                            <div class="hud-card-title">资产哨兵</div>
+                            <div class="hud-card-sub">Monero / Node Ticker</div>
+                        </div>
+                        <div class="hud-card-icon">💱</div>
+                    </div>
+                    <div class="hud-card" onclick="openModule('carrier')">
+                        <div>
+                            <div class="hud-card-title">基站调试</div>
+                            <div class="hud-card-sub">ARFCN / Anti-Tap</div>
+                        </div>
+                        <div class="hud-card-icon">📡</div>
+                    </div>
+                    <div class="hud-card" onclick="openModule('vault')">
+                        <div>
+                            <div class="hud-card-title">绝密文件柜</div>
+                            <div class="hud-card-sub">Encrypted Vault</div>
+                        </div>
+                        <div class="hud-card-icon">📁</div>
                     </div>
                 </div>
-                <div class="dash-card" onclick="openModule('assets')">
-                    <div class="dash-card-icon">💱</div>
-                    <div>
-                        <div class="dash-card-title">离岸资产哨兵</div>
-                        <div class="dash-card-desc">门罗币与隐私资产网关监控</div>
+
+                <!-- 中间旋转科技罗盘 -->
+                <div class="hud-center-radar">
+                    <div class="radar-badge" onclick="openModule('deaddrop')" title="点击进入死信箱">
+                        <div class="radar-inner">死信箱<br>DEAD DROP</div>
                     </div>
                 </div>
-                <div class="dash-card" onclick="openModule('carrier')">
-                    <div class="dash-card-icon">📡</div>
-                    <div>
-                        <div class="dash-card-title">基站参数调试</div>
-                        <div class="dash-card-desc">ARFCN 频段反监听雷达扫描</div>
-                    </div>
-                </div>
-                <div class="dash-card" onclick="openModule('vault')">
-                    <div class="dash-card-icon">📁</div>
-                    <div>
-                        <div class="dash-card-title">绝密文件柜</div>
-                        <div class="dash-card-desc">离岸备忘录与加密文本暂存</div>
-                    </div>
-                </div>
-                <div class="dash-card" onclick="openModule('deaddrop')">
-                    <div class="dash-card-icon">🪦</div>
-                    <div>
-                        <div class="dash-card-title">死信箱 (Dead Drop)</div>
-                        <div class="dash-card-desc">异步加密漂流瓶留言板</div>
-                    </div>
-                </div>
-                <div class="dash-card" onclick="panicWipe()" style="border-color: #ff3b30;">
-                    <div class="dash-card-icon">🚨</div>
-                    <div>
-                        <div class="dash-card-title" style="color:#ff6b6b;">恐慌熔断</div>
-                        <div class="dash-card-desc">一键瞬间销毁所有本地痕迹并锁死</div>
-                    </div>
+
+                <!-- 底部快捷工具栏 -->
+                <div class="hud-bottom-bar">
+                    <div class="hud-icon-btn" onclick="openModule('chat')" title="加密信道">💬</div>
+                    <div class="hud-icon-btn" onclick="openModule('assets')" title="资产哨兵">💱</div>
+                    <div class="hud-icon-btn" onclick="openModule('carrier')" title="基站调试">📡</div>
+                    <div class="hud-icon-btn" onclick="panicWipe()" title="恐慌熔断" style="color:#ff3b30;">🚨</div>
                 </div>
             </div>
 
@@ -277,7 +275,7 @@
                     </div>
                     <div class="chat-main">
                         <div class="chat-messages" id="chatMessages">
-                            <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">选择左侧好友通信（双击消息可双方彻底销毁）</div>
+                            <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; border:none;">选择左侧好友通信（双击消息可双方彻底销毁）</div>
                         </div>
                         <div class="chat-input-area">
                             <input type="text" id="msgInput" placeholder="输入加密消息..." onkeypress="handleKeyPress(event)">
@@ -403,10 +401,10 @@
     }
 
     function showDashboard() {
-        document.getElementById('dashboard-view').style.display = 'grid';
+        document.getElementById('dashboard-view').style.display = 'flex';
         document.getElementById('chat-view').style.display = 'none';
         document.querySelectorAll('.sub-panel-view').forEach(el => el.style.display = 'none');
-        document.getElementById('panelTitle').innerText = "🛡️ 仪表盘总控";
+        document.getElementById('panelTitle').innerText = "🛡️ 离岸指挥系统";
         document.getElementById('backDashboardBtn').style.display = 'none';
     }
 
@@ -440,7 +438,7 @@
         if (mode === 'login') {
             document.getElementById('tabLogin').className = 'tab-btn active';
             document.getElementById('tabRegister').className = 'tab-btn';
-            document.getElementById('authSubmitBtn').innerText = '接入系统';
+            document.getElementById('authSubmitBtn').innerText = '接入指挥舱';
         } else {
             document.getElementById('tabRegister').className = 'tab-btn active';
             document.getElementById('tabLogin').className = 'tab-btn';
@@ -533,7 +531,7 @@
             });
             container.scrollTop = container.scrollHeight;
         } else {
-            container.innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">暂无云端加密消息</div>';
+            container.innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; border:none;">暂无云端加密消息</div>';
         }
     }
 
