@@ -96,9 +96,10 @@
         
         .btn-primary { background: var(--accent-color); color: #000; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; box-shadow: 4px 4px 10px rgba(0,0,0,0.4), -2px -2px 6px var(--accent-glow); }
 
-        /* 顶部导航控制栏 */
+        /* 顶部统一控制栏 */
         .system-header { background: var(--bg-panel); padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 10; }
-        .system-header h3 { font-size: 14px; color: var(--accent-color); font-weight: bold; letter-spacing: 0.5px; }
+        .header-left { display: flex; align-items: center; gap: 8px; }
+        .system-header h3 { font-size: 13px; color: var(--accent-color); font-weight: bold; letter-spacing: 0.5px; }
         .header-tools { display: flex; align-items: center; gap: 8px; }
 
         .theme-selector { display: flex; gap: 5px; }
@@ -109,6 +110,7 @@
 
         .btn-sm { background: var(--border-color); color: var(--text-main); border: none; padding: 4px 8px; border-radius: 6px; cursor: pointer; font-size: 11px; }
         .btn-danger { background: #3d1414; color: #ff6b6b; }
+        .btn-back { background: var(--border-color); color: var(--accent-color); font-weight: bold; display: none; }
 
         /* 主视口区域 */
         .system-body { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
@@ -143,7 +145,7 @@
         .chat-input-area input { flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 18px; padding: 8px 14px; color: var(--text-main); font-size: 13px; outline: none; box-shadow: inset 2px 2px 5px #060608; }
         .chat-input-area button { background: var(--accent-color); color: #000; border: none; border-radius: 18px; padding: 0 14px; height: 34px; font-weight: bold; cursor: pointer; font-size: 12px; }
 
-        /* 3. 通用副面板通用样式 (资产/基站/文件柜) */
+        /* 3. 通用副面板通用样式 */
         .sub-panel-view { display: none; flex: 1; padding: 20px; flex-direction: column; gap: 15px; background: var(--bg-main); overflow-y: auto; }
         .sub-panel-card { background: var(--bg-panel); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; box-shadow: 4px 4px 10px rgba(0,0,0,0.4); }
         .sub-panel-card h4 { color: var(--accent-color); font-size: 14px; margin-bottom: 8px; }
@@ -199,12 +201,15 @@
                 <label>访问安全密码</label>
                 <input type="password" id="passwordInput" placeholder="输入密码">
             </div>
-            <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">接入指挥舱</button>
+            <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">接入系统</button>
         </div>
 
         <!-- 顶部统一控制栏 -->
         <div class="system-header">
-            <h3 id="panelTitle" style="cursor:pointer;" onclick="showDashboard()">🛡️ 指挥舱仪表盘</h3>
+            <div class="header-left">
+                <button class="btn-sm btn-back" id="backDashboardBtn" onclick="showDashboard()">◀ 主舱</button>
+                <h3 id="panelTitle">🛡️ 仪表盘总控</h3>
+            </div>
             <div class="header-tools">
                 <div class="theme-selector">
                     <div class="theme-dot d1" onclick="setTheme('matrix')" title="赛博矩阵"></div>
@@ -264,7 +269,7 @@
             </div>
 
             <!-- 视图 B：聊天子系统 -->
-            <div id="chat-view">
+            <div id="chat-view" style="display:none; flex:1; flex-direction:column; overflow:hidden;">
                 <div class="im-container">
                     <div class="sidebar">
                         <div class="friend-list" id="friendList"></div>
@@ -379,7 +384,6 @@
         clearCalc();
     }
 
-    // 恐慌熔断机制
     function panicWipe() {
         if (confirm("🚨 警告：即将触发恐慌熔断！所有本地缓存、登录状态将被彻底抹除并退回计算器！")) {
             myUsername = "";
@@ -391,33 +395,36 @@
         }
     }
 
-    // 视图切换控制
+    // 显示仪表盘（九宫格）
     function showDashboard() {
-        document.getElementById('panelTitle').innerText = "🛡️ 指挥舱仪表盘";
         document.getElementById('dashboard-view').style.display = 'grid';
         document.getElementById('chat-view').style.display = 'none';
         document.querySelectorAll('.sub-panel-view').forEach(el => el.style.display = 'none');
+        document.getElementById('panelTitle').innerText = "🛡️ 仪表盘总控";
+        document.getElementById('backDashboardBtn').style.display = 'none'; // 在主舱时隐藏返回键
     }
 
+    // 打开某个子模块
     function openModule(mod) {
         document.getElementById('dashboard-view').style.display = 'none';
-        document.querySelectorAll('.sub-panel-view').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.sub-panel-view').forEach(el => el.style.display = 'none';
         document.getElementById('chat-view').style.display = 'none';
+        document.getElementById('backDashboardBtn').style.display = 'block'; // 显示返回主舱按钮
 
         if (mod === 'chat') {
-            document.getElementById('panelTitle').innerText = "💬 加密信道";
+            document.getElementById('panelTitle').innerText = "💬 [加密信道]";
             document.getElementById('chat-view').style.display = 'flex';
         } else if (mod === 'assets') {
-            document.getElementById('panelTitle').innerText = "💱 离岸资产哨兵";
+            document.getElementById('panelTitle').innerText = "💱 [离岸资产哨兵]";
             document.getElementById('assets-view').style.display = 'flex';
         } else if (mod === 'carrier') {
-            document.getElementById('panelTitle').innerText = "📡 基站参数调试";
+            document.getElementById('panelTitle').innerText = "📡 [基站参数调试]";
             document.getElementById('carrier-view').style.display = 'flex';
         } else if (mod === 'vault') {
-            document.getElementById('panelTitle').innerText = "📁 绝密文件柜";
+            document.getElementById('panelTitle').innerText = "📁 [绝密文件柜]";
             document.getElementById('vault-view').style.display = 'flex';
         } else if (mod === 'deaddrop') {
-            document.getElementById('panelTitle').innerText = "🪦 死信箱";
+            document.getElementById('panelTitle').innerText = "🪦 [死信箱]";
             document.getElementById('deaddrop-view').style.display = 'flex';
         }
     }
@@ -428,7 +435,7 @@
         if (mode === 'login') {
             document.getElementById('tabLogin').className = 'tab-btn active';
             document.getElementById('tabRegister').className = 'tab-btn';
-            document.getElementById('authSubmitBtn').innerText = '接入指挥舱';
+            document.getElementById('authSubmitBtn').innerText = '接入系统';
         } else {
             document.getElementById('tabRegister').className = 'tab-btn active';
             document.getElementById('tabLogin').className = 'tab-btn';
@@ -467,7 +474,7 @@
         myUsername = u;
         document.getElementById('auth-panel').style.display = 'none';
         startPollingMessages();
-        showDashboard();
+        showDashboard(); // 登录成功进入仪表盘
     }
 
     function addFriendPrompt() {
