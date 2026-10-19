@@ -63,7 +63,7 @@
         .output { font-size: 38px; font-weight: bold; color: #fff; }
         
         .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 10px; }
-        button.key { background: #26262b; color: #fff; border: none; border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; transition: background 0.1s; }
+        button.key { background: #26262b; color: #fff; border: none; border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
         button.key:active { background: #444; }
         button.operator { background: #ff9f0a; color: #fff; }
         button.function { background: #d4d4d2; color: #000; }
@@ -72,7 +72,6 @@
         /* 秘密 IM 系统 */
         #secret-system { display: none; flex: 1; flex-direction: column; background: var(--bg-main); position: relative; }
         
-        /* 登录/注册面板 */
         #auth-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-panel); z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 35px; gap: 18px; }
         #auth-panel h2 { text-align: center; color: var(--accent-color); font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; }
         .tab-group { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
@@ -81,15 +80,12 @@
 
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 10px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; transition: border 0.2s; }
+        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 10px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; }
         .input-group input:focus { border-color: var(--accent-color); }
-        .btn-primary { background: var(--accent-color); color: #000; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; transition: opacity 0.2s; }
-        .btn-primary:active { opacity: 0.8; }
+        .btn-primary { background: var(--accent-color); color: #000; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; }
 
-        /* 聊天主结构 */
         .im-container { display: flex; flex: 1; overflow: hidden; }
         
-        /* 好友侧边栏 */
         .sidebar { width: 135px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
         .sidebar-header { padding: 12px; font-size: 11px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; color: var(--text-muted); }
         .user-id-badge { color: var(--accent-color); font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
@@ -101,24 +97,26 @@
         .theme-dot.d3 { background: #ffb700; }
 
         .friend-list { flex: 1; overflow-y: auto; }
-        .friend-item { padding: 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; color: var(--text-muted); transition: background 0.1s; }
-        .friend-item:hover { color: var(--text-main); }
+        .friend-item { padding: 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; color: var(--text-muted); }
         .friend-item.active { background: var(--bg-panel); color: var(--accent-color); font-weight: bold; border-left: 3px solid var(--accent-color); }
         .add-friend-btn { padding: 10px; background: transparent; border: none; color: var(--accent-color); font-size: 12px; cursor: pointer; text-align: center; border-top: 1px solid var(--border-color); font-weight: 500; }
 
-        /* 聊天正文 */
         .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); }
-        .chat-header { background: var(--bg-panel); padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
-        .chat-header h3 { font-size: 14px; color: var(--text-main); font-weight: 600; }
-        .btn-sm { background: var(--border-color); color: var(--text-main); border: none; padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 11px; }
+        .chat-header { background: var(--bg-panel); padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); }
+        .chat-header h3 { font-size: 13px; color: var(--text-main); font-weight: 600; }
+        
+        .header-btn-group { display: flex; gap: 4px; }
+        .btn-sm { background: var(--border-color); color: var(--text-main); border: none; padding: 4px 6px; border-radius: 4px; cursor: pointer; font-size: 10px; }
         .btn-danger { background: #3d1414; color: #ff6b6b; }
+        .btn-burn { background: #4d2600; color: #ffb700; }
 
         .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
         
-        /* 气泡美学升级 */
-        .message { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .message { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: relative; cursor: pointer; }
         .message.incoming { background: var(--msg-incoming); align-self: flex-start; color: var(--text-main); border-bottom-left-radius: 4px; }
         .message.outgoing { background: var(--msg-outgoing); align-self: flex-end; color: var(--msg-outgoing-text); border-bottom-right-radius: 4px; }
+        .message::after { content: "🔥双击焚烧"; position: absolute; bottom: -14px; right: 4px; font-size: 9px; color: var(--text-muted); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .message:hover::after { opacity: 0.7; }
         
         .chat-input-area { padding: 12px; background: var(--bg-panel); display: flex; gap: 10px; border-top: 1px solid var(--border-color); align-items: center; }
         .chat-input-area input { flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 14px; outline: none; }
@@ -204,9 +202,12 @@
             <div class="chat-main">
                 <div class="chat-header">
                     <h3 id="currentChatTarget">未选择好友</h3>
+                    <div class="header-btn-group">
+                        <button class="btn-sm btn-burn" onclick="burnAllMessages()">🔥 焚毁会话</button>
+                    </div>
                 </div>
                 <div class="chat-messages" id="chatMessages">
-                    <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">选择左侧好友进行加密通信（长按好友可删除）</div>
+                    <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">选择左侧好友通信（双击气泡可单条焚毁）</div>
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="msgInput" placeholder="输入加密消息..." onkeypress="handleKeyPress(event)">
@@ -243,14 +244,12 @@
         }
     }
 
-    // 主题切换功能
     function setTheme(themeName) {
         document.body.className = '';
         if (themeName === 'minimal') document.body.classList.add('theme-minimal');
         if (themeName === 'amber') document.body.classList.add('theme-amber');
         localStorage.setItem('shadow_theme', themeName);
     }
-    // 初始化加载用户保存的主题
     window.addEventListener('DOMContentLoaded', () => {
         let savedTheme = localStorage.getItem('shadow_theme') || 'matrix';
         setTheme(savedTheme);
@@ -402,13 +401,13 @@
         
         let allMsgs = [...(data1||[]), ...(data2||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
 
-        const container = newLocal = document.getElementById('chatMessages');
+        const container = document.getElementById('chatMessages');
         container.innerHTML = "";
 
         if (allMsgs.length > 0) {
             allMsgs.forEach(msg => {
                 const type = (msg.sender === myUsername) ? 'outgoing' : 'incoming';
-                appendMessageToUI(msg.content, type, false);
+                appendMessageToUI(msg.id, msg.content, type, false);
             });
             container.scrollTop = container.scrollHeight;
         } else {
@@ -423,13 +422,37 @@
         if (!activeFriend) { alert("请先在左侧选择或添加好友！"); return; }
 
         input.value = "";
-        appendMessageToUI(text, 'outgoing', true);
 
-        await sbRest('messages', 'POST', "", {
+        // 发送到云端
+        let res = await sbRest('messages', 'POST', "", {
             sender: myUsername,
             receiver: activeFriend,
             content: text
         });
+
+        if (res && res.length > 0) {
+            appendMessageToUI(res[0].id, text, 'outgoing', true);
+        } else {
+            loadHistoryMessages(); // 兜底刷新
+        }
+    }
+
+    // 焚毁单条消息
+    async function burnMessage(msgId, element) {
+        if (!confirm("确认焚毁此条加密消息？销毁后双方将彻底抹除。")) return;
+        let res = await sbRest('messages', 'DELETE', `?id=eq.${msgId}`);
+        element.style.transform = "scale(0)";
+        element.style.transition = "transform 0.2s ease";
+        setTimeout(() => element.remove(), 200);
+    }
+
+    // 焚毁当前会话全部消息
+    async function burnAllMessages() {
+        if (!activeFriend) return;
+        if (!confirm(`警告：确定要一键焚毁与 [${activeFriend}] 的所有云端聊天记录吗？此操作不可逆！`)) return;
+        
+        await sbRest('messages', 'DELETE', `?or=(and(sender.eq.${myUsername},receiver.eq.${activeFriend}),and(sender.eq.${activeFriend},receiver.eq.${myUsername}))`);
+        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">会话已彻底焚毁</div>';
     }
 
     function startPollingMessages() {
@@ -451,13 +474,19 @@
         }, 3000);
     }
 
-    function appendMessageToUI(text, type, scroll = true) {
+    function appendMessageToUI(msgId, text, type, scroll = true) {
         const container = document.getElementById('chatMessages');
-        if (container.innerText.includes("暂无")) container.innerHTML = "";
+        if (container.innerText.includes("暂无") || container.innerText.includes("已彻底焚毁")) container.innerHTML = "";
 
         const div = document.createElement('div');
         div.className = `message ${type}`;
         div.innerText = text;
+        
+        // 绑定双击焚毁单条消息事件
+        if (msgId) {
+            div.ondblclick = () => burnMessage(msgId, div);
+        }
+
         container.appendChild(div);
         if (scroll) container.scrollTop = container.scrollHeight;
     }
