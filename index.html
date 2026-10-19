@@ -4,84 +4,499 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>科学计算器</title>
-    <!-- 引入官方 Supabase SDK，确保底层数据库操作百分之百稳定 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* 默认主题：赛博矩阵 (Cyber Matrix) */
+        /* 默认主题：赛博矩阵 (Cyber Matrix) - 微立体风格 */
         :root {
-            --bg-main: #0a0a0c;
-            --bg-panel: #141418;
-            --bg-sidebar: #0e0e11;
-            --border-color: #22222a;
+            --bg-main: #0c0c0e;
+            --bg-panel: #16161a;
+            --bg-sidebar: #101013;
+            --border-color: #262630;
             --accent-color: #00ff66;
-            --accent-hover: #00cc52;
+            --accent-glow: rgba(0, 255, 102, 0.25);
             --text-main: #f0f0f5;
             --text-muted: #78788c;
-            --msg-incoming: #1a1a22;
+            --msg-incoming: #1e1e24;
+            --msg-incoming-shadow: 4px 4px 10px #08080a, -2px -2px 6px #24242e;
             --msg-outgoing: #004d2c;
             --msg-outgoing-text: #00ff66;
+            --msg-outgoing-shadow: 4px 4px 10px #002213, -2px -2px 6px #007845;
+            --panel-shadow: 8px 8px 20px #060608, -6px -6px 20px #1c1c22;
         }
 
         /* 主题二：离岸极简 (Offshore Minimal) */
         body.theme-minimal {
-            --bg-main: #121212;
-            --bg-panel: #1a1a1a;
-            --bg-sidebar: #161616;
-            --border-color: #2b2b2b;
+            --bg-main: #0f1115;
+            --bg-panel: #161b22;
+            --bg-sidebar: #0d1117;
+            --border-color: #30363d;
             --accent-color: #2f81f7;
-            --accent-hover: #1f6feb;
+            --accent-glow: rgba(47, 129, 247, 0.25);
             --text-main: #e6edf3;
             --text-muted: #8b949e;
             --msg-incoming: #21262d;
+            --msg-incoming-shadow: 4px 4px 10px #0b0d10, -2px -2px 6px #373f4a;
             --msg-outgoing: #1f6feb;
             --msg-outgoing-text: #ffffff;
+            --msg-outgoing-shadow: 4px 4px 10px #0d3880, -2px -2px 6px #3182ff;
+            --panel-shadow: 8px 8px 20px #080a0e, -6px -6px 20px #242c36;
         }
 
         /* 主题三：炽烈战术 (Tactical Amber) */
         body.theme-amber {
-            --bg-main: #0d0a00;
-            --bg-panel: #1a1500;
-            --bg-sidebar: #120f00;
-            --border-color: #332900;
+            --bg-main: #0a0800;
+            --bg-panel: #161200;
+            --bg-sidebar: #100d00;
+            --border-color: #332600;
             --accent-color: #ffb700;
-            --accent-hover: #cc9200;
+            --accent-glow: rgba(255, 183, 0, 0.25);
             --text-main: #ffe6b3;
             --text-muted: #997a00;
             --msg-incoming: #261f00;
+            --msg-incoming-shadow: 4px 4px 10px #050400, -2px -2px 6px #3d3100;
             --msg-outgoing: #664d00;
             --msg-outgoing-text: #ffe6b3;
+            --msg-outgoing-shadow: 4px 4px 10px #261f00, -2px -2px 6px #a37a00;
+            --panel-shadow: 8px 8px 20px #050400, -6px -6px 20px #261f00;
         }
 
         body { background-color: var(--bg-main); color: var(--text-main); display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; transition: background 0.3s; }
         
-        .container { width: 100%; max-width: 420px; height: 100%; background: var(--bg-panel); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 12px 36px rgba(0,0,0,0.7); border: 1px solid var(--border-color); }
+        .container { width: 100%; max-width: 420px; height: 100%; background: var(--bg-panel); display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: var(--panel-shadow); border: 1px solid var(--border-color); border-radius: 16px; }
 
         /* 计算器界面 */
         #calc-screen { flex: 1; display: flex; flex-direction: column; padding: 18px; justify-content: flex-end; background: #121212; }
-        .display { background: #1a1a1a; height: 110px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 15px; margin-bottom: 20px; border: 1px solid #333; }
+        .display { background: #18181c; height: 110px; border-radius: 12px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 15px; margin-bottom: 20px; border: 1px solid #2a2a30; box-shadow: inset 4px 4px 8px #0a0a0c, inset -4px -4px 8px #26262e; }
         .history { font-size: 15px; color: #777; margin-bottom: 4px; min-height: 18px; }
         .output { font-size: 38px; font-weight: bold; color: #fff; }
         
         .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 10px; }
-        button.key { background: #26262b; color: #fff; border: none; border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
-        button.key:active { background: #444; }
-        button.operator { background: #ff9f0a; color: #fff; }
-        button.function { background: #d4d4d2; color: #000; }
+        button.key { background: #222228; color: #fff; border: none; border-radius: 50%; width: 66px; height: 66px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; box-shadow: 4px 4px 10px #0e0e12, -2px -2px 6px #363642; transition: all 0.1s; }
+        button.key:active { box-shadow: inset 3px 3px 6px #0e0e12, inset -3px -3px 6px #363642; transform: scale(0.96); }
+        button.operator { background: #ff9f0a; color: #fff; box-shadow: 4px 4px 10px #7a4c00, -2px -2px 6px #ffbe4d; }
+        button.function { background: #d4d4d2; color: #000; box-shadow: 4px 4px 10px #666664, -2px -2px 6px #ffffff; }
         button.zero { grid-column: span 2; width: 144px; border-radius: 33px; }
 
         /* 秘密 IM 系统 */
         #secret-system { display: none; flex: 1; flex-direction: column; background: var(--bg-main); position: relative; }
         
         #auth-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-panel); z-index: 10; display: flex; flex-direction: column; justify-content: center; padding: 35px; gap: 18px; }
-        #auth-panel h2 { text-align: center; color: var(--accent-color); font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; }
+        #auth-panel h2 { text-align: center; color: var(--accent-color); font-size: 20px; letter-spacing: 1px; margin-bottom: 5px; text-shadow: 0 0 10px var(--accent-glow); }
         .tab-group { display: flex; justify-content: center; gap: 25px; margin-bottom: 10px; border-bottom: 1px solid var(--border-color); padding-bottom: 8px; }
         .tab-btn { font-size: 15px; color: var(--text-muted); cursor: pointer; border-bottom: 2px solid transparent; padding-bottom: 6px; transition: color 0.2s; }
         .tab-btn.active { color: var(--accent-color); border-color: var(--accent-color); font-weight: bold; }
 
         .input-group { display: flex; flex-direction: column; gap: 6px; }
         .input-group label { font-size: 12px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
-        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 10px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; }
-        .input-group input:focus { border-color: var(--accent-color); }
-        .btn-primary { background: 
+        .input-group input { background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 10px; padding: 13px; color: var(--text-main); font-size: 15px; outline: none; box-shadow: inset 3px 3px 6px #060608, inset -3px -3px 6px #1e1e24; }
+        .input-group input:focus { border-color: var(--accent-color); box-shadow: 0 0 8px var(--accent-glow), inset 3px 3px 6px #060608; }
+        
+        .btn-primary { background: var(--accent-color); color: #000; border: none; border-radius: 10px; padding: 13px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 5px; box-shadow: 4px 4px 10px rgba(0,0,0,0.4), -2px -2px 6px var(--accent-glow); transition: transform 0.1s; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        .im-container { display: flex; flex: 1; overflow: hidden; }
+        
+        .sidebar { width: 135px; background: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; }
+        .sidebar-header { padding: 12px; font-size: 11px; border-bottom: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px; color: var(--text-muted); }
+        .user-id-badge { color: var(--accent-color); font-weight: bold; overflow: hidden; text-overflow: ellipsis; }
+        
+        .theme-selector { display: flex; gap: 6px; margin-top: 2px; }
+        .theme-dot { width: 16px; height: 16px; border-radius: 50%; cursor: pointer; border: 1px solid #fff4; box-shadow: 2px 2px 5px rgba(0,0,0,0.5); }
+        .theme-dot.d1 { background: #00ff66; }
+        .theme-dot.d2 { background: #2f81f7; }
+        .theme-dot.d3 { background: #ffb700; }
+
+        .friend-list { flex: 1; overflow-y: auto; }
+        .friend-item { padding: 12px; font-size: 13px; cursor: pointer; border-bottom: 1px solid var(--border-color); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; color: var(--text-muted); transition: background 0.1s; }
+        .friend-item:hover { color: var(--text-main); }
+        .friend-item.active { background: var(--bg-panel); color: var(--accent-color); font-weight: bold; border-left: 3px solid var(--accent-color); box-shadow: inset 2px 2px 5px rgba(0,0,0,0.3); }
+        .add-friend-btn { padding: 10px; background: transparent; border: none; color: var(--accent-color); font-size: 12px; cursor: pointer; text-align: center; border-top: 1px solid var(--border-color); font-weight: 500; }
+
+        .chat-main { flex: 1; display: flex; flex-direction: column; background: var(--bg-main); }
+        .chat-header { background: var(--bg-panel); padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 2; }
+        .chat-header h3 { font-size: 13px; color: var(--text-main); font-weight: 600; }
+        
+        .header-btn-group { display: flex; gap: 4px; }
+        .btn-sm { background: var(--border-color); color: var(--text-main); border: none; padding: 5px 8px; border-radius: 6px; cursor: pointer; font-size: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.3); }
+        .btn-danger { background: #3d1414; color: #ff6b6b; }
+        .btn-burn { background: #4d2600; color: #ffb700; }
+
+        .chat-messages { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+        
+        /* 核心立体气泡设计 */
+        .message { max-width: 82%; padding: 11px 15px; border-radius: 14px; font-size: 14px; line-height: 1.45; word-break: break-all; position: relative; cursor: pointer; transition: transform 0.1s; }
+        .message:active { transform: scale(0.98); }
+        
+        .message.incoming { background: var(--msg-incoming); align-self: flex-start; color: var(--text-main); border-bottom-left-radius: 4px; box-shadow: var(--msg-incoming-shadow); border: 1px solid var(--border-color); }
+        .message.outgoing { background: var(--msg-outgoing); align-self: flex-end; color: var(--msg-outgoing-text); border-bottom-right-radius: 4px; box-shadow: var(--msg-outgoing-shadow); border: 1px solid rgba(255,255,255,0.1); }
+        
+        .message::after { content: "🔥双击双方烧毁"; position: absolute; bottom: -16px; right: 4px; font-size: 9px; color: var(--text-muted); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .message:hover::after { opacity: 0.8; }
+        
+        /* 立体凹陷输入框与悬浮发送按钮 */
+        .chat-input-area { padding: 12px; background: var(--bg-panel); display: flex; gap: 10px; border-top: 1px solid var(--border-color); align-items: center; box-shadow: 0 -4px 10px rgba(0,0,0,0.3); }
+        .chat-input-area input { flex: 1; background: var(--bg-sidebar); border: 1px solid var(--border-color); border-radius: 20px; padding: 10px 16px; color: var(--text-main); font-size: 14px; outline: none; box-shadow: inset 3px 3px 6px #060608, inset -3px -3px 6px #1e1e24; }
+        .chat-input-area input:focus { border-color: var(--accent-color); box-shadow: 0 0 8px var(--accent-glow), inset 3px 3px 6px #060608; }
+        .chat-input-area button { background: var(--accent-color); color: #000; border: none; border-radius: 20px; padding: 0 16px; height: 38px; font-weight: bold; cursor: pointer; font-size: 13px; box-shadow: 3px 3px 8px rgba(0,0,0,0.4), -1px -1px 4px var(--accent-glow); transition: transform 0.1s; }
+        .chat-input-area button:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- 1. 计算器伪装界面 -->
+    <div id="calc-screen">
+        <div class="display">
+            <div class="history" id="history"></div>
+            <div class="output" id="output">0</div>
+        </div>
+        <div class="keypad">
+            <button class="key function" onclick="clearCalc()">AC</button>
+            <button class="key function" onclick="toggleSign()">+/-</button>
+            <button class="key function" onclick="appendOperator('%')">%</button>
+            <button class="key operator" onclick="appendOperator('/')">÷</button>
+            <button class="key" onclick="appendNumber('7')">7</button>
+            <button class="key" onclick="appendNumber('8')">8</button>
+            <button class="key" onclick="appendNumber('9')">9</button>
+            <button class="key operator" onclick="appendOperator('*')">×</button>
+            <button class="key" onclick="appendNumber('4')">4</button>
+            <button class="key" onclick="appendNumber('5')">5</button>
+            <button class="key" onclick="appendNumber('6')">6</button>
+            <button class="key operator" onclick="appendOperator('-')">-</button>
+            <button class="key" onclick="appendNumber('1')">1</button>
+            <button class="key" onclick="appendNumber('2')">2</button>
+            <button class="key" onclick="appendNumber('3')">3</button>
+            <button class="key operator" onclick="appendOperator('+')">+</button>
+            <button class="key zero" onclick="appendNumber('0')">0</button>
+            <button class="key" onclick="appendNumber('.')">.</button>
+            <button class="key operator" onclick="calculate()">=</button>
+        </div>
+    </div>
+
+    <!-- 2. 秘密 IM 系统 -->
+    <div id="secret-system">
+        <!-- 登录/注册面板 -->
+        <div id="auth-panel">
+            <h2>🔒 影子信道接入</h2>
+            <div class="tab-group">
+                <span class="tab-btn active" id="tabLogin" onclick="switchAuthMode('login')">登录</span>
+                <span class="tab-btn" id="tabRegister" onclick="switchAuthMode('register')">注册新账号</span>
+            </div>
+
+            <div class="input-group">
+                <label>专属隐密代号 (UID)</label>
+                <input type="text" id="usernameInput" placeholder="输入你的代号">
+            </div>
+            <div class="input-group">
+                <label>访问安全密码</label>
+                <input type="password" id="passwordInput" placeholder="输入密码">
+            </div>
+
+            <button class="btn-primary" id="authSubmitBtn" onclick="handleAuthSubmit()">登录系统</button>
+        </div>
+
+        <!-- 聊天主结构 -->
+        <div class="im-container">
+            <!-- 好友侧边栏 -->
+            <div class="sidebar">
+                <div class="sidebar-header">
+                    <div>用户: <span class="user-id-badge" id="currentUserLabel">未接入</span></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2px;">
+                        <span>风格:</span>
+                        <div class="theme-selector">
+                            <div class="theme-dot d1" onclick="setTheme('matrix')" title="赛博矩阵"></div>
+                            <div class="theme-dot d2" onclick="setTheme('minimal')" title="离岸极简"></div>
+                            <div class="theme-dot d3" onclick="setTheme('amber')" title="炽烈战术"></div>
+                        </div>
+                    </div>
+                    <button class="btn-sm btn-danger" onclick="lockApp()" style="margin-top:6px; width:100%;">锁定伪装</button>
+                </div>
+                <div class="friend-list" id="friendList"></div>
+                <button class="add-friend-btn" onclick="addFriendPrompt()">+ 添加好友</button>
+            </div>
+
+            <!-- 聊天正文 -->
+            <div class="chat-main">
+                <div class="chat-header">
+                    <h3 id="currentChatTarget">未选择好友</h3>
+                    <div class="header-btn-group">
+                        <button class="btn-sm btn-burn" onclick="clearLocalScreen()">🔥 本地清屏</button>
+                    </div>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">选择左侧好友通信（双击任意消息可双方彻底销毁）</div>
+                </div>
+                <div class="chat-input-area">
+                    <input type="text" id="msgInput" placeholder="输入加密消息..." onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()">发送</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SUPABASE_URL = "https://xseuvesmmsgixhrjxayc.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzZXV2ZXNtbXNnaXhocmp4YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjIwMzYsImV4cCI6MjEwNzk5ODAzNn0.u3g7CTte10sKFGOM7HXaoyz1jZGhczoiXPywHPsFBLE";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    function setTheme(themeName) {
+        document.body.className = '';
+        if (themeName === 'minimal') document.body.classList.add('theme-minimal');
+        if (themeName === 'amber') document.body.classList.add('theme-amber');
+        localStorage.setItem('shadow_theme', themeName);
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+        let savedTheme = localStorage.getItem('shadow_theme') || 'matrix';
+        setTheme(savedTheme);
+    });
+
+    let currentInput = "0";
+    let historyInput = "";
+    let inputSequence = "";
+
+    function updateDisplay() {
+        document.getElementById('output').innerText = currentInput;
+        document.getElementById('history').innerText = historyInput;
+    }
+    function appendNumber(num) {
+        inputSequence += num;
+        currentInput = (currentInput === "0") ? num : currentInput + num;
+        updateDisplay();
+    }
+    function appendOperator(op) {
+        inputSequence += op;
+        historyInput += currentInput + " " + op + " ";
+        currentInput = "0";
+        updateDisplay();
+    }
+    function clearCalc() { currentInput = "0"; historyInput = ""; inputSequence = ""; updateDisplay(); }
+    
+    function calculate() {
+        inputSequence += "=";
+        if (inputSequence.includes("1234=")) {
+            document.getElementById('calc-screen').style.display = 'none';
+            document.getElementById('secret-system').style.display = 'flex';
+            inputSequence = "";
+            return;
+        }
+        try {
+            currentInput = String(eval((historyInput + currentInput).replace(/×/g, '*').replace(/÷/g, '/')));
+            historyInput = ""; inputSequence = "";
+        } catch (e) { currentInput = "错误"; }
+        updateDisplay();
+    }
+
+    function lockApp() {
+        document.getElementById('secret-system').style.display = 'none';
+        document.getElementById('calc-screen').style.display = 'flex';
+        clearCalc();
+    }
+
+    let currentAuthMode = 'login';
+    function switchAuthMode(mode) {
+        currentAuthMode = mode;
+        if (mode === 'login') {
+            document.getElementById('tabLogin').className = 'tab-btn active';
+            document.getElementById('tabRegister').className = 'tab-btn';
+            document.getElementById('authSubmitBtn').innerText = '登录系统';
+        } else {
+            document.getElementById('tabRegister').className = 'tab-btn active';
+            document.getElementById('tabLogin').className = 'tab-btn';
+            document.getElementById('authSubmitBtn').innerText = '立即注册账号';
+        }
+    }
+
+    let myUsername = "";
+    let activeFriend = "";
+    let friendsList = [];
+    let pollInterval = null;
+    let localClearedTime = 0;
+
+    async function handleAuthSubmit() {
+        const u = document.getElementById('usernameInput').value.trim();
+        const p = document.getElementById('passwordInput').value.trim();
+        if (!u || !p) { alert("代号和密码不能为空！"); return; }
+
+        if (currentAuthMode === 'register') {
+            let { data: existing } = await supabaseClient.from('users').select('*').eq('username', u);
+            if (existing && existing.length > 0) {
+                alert("该代号已被注册，请换一个！");
+                return;
+            }
+            let { error } = await supabaseClient.from('users').insert([{ username: u, password: p }]);
+            if (error) { alert("注册失败: " + error.message); return; }
+            alert("注册成功！已自动为您登录。");
+        } else {
+            let { data: users } = await supabaseClient.from('users').select('*').eq('username', u).eq('password', p);
+            if (!users || users.length === 0) {
+                alert("代号或密码错误！如果是新用户，请先点击【注册新账号】。");
+                return;
+            }
+        }
+
+        myUsername = u;
+        document.getElementById('currentUserLabel').innerText = u;
+        document.getElementById('auth-panel').style.display = 'none';
+        startPollingMessages();
+    }
+
+    function addFriendPrompt() {
+        const friendId = prompt("请输入好友的隐密代号 (例如: user_b):");
+        if (friendId && friendId !== myUsername) {
+            if (!friendsList.includes(friendId)) {
+                friendsList.push(friendId);
+                renderFriendList();
+            }
+            selectFriend(friendId);
+        }
+    }
+
+    function renderFriendList() {
+        const listEl = document.getElementById('friendList');
+        listEl.innerHTML = "";
+        
+        friendsList.forEach(f => {
+            const div = document.createElement('div');
+            div.className = `friend-item ${activeFriend === f ? 'active' : ''}`;
+            div.innerText = "👤 " + f;
+            div.onclick = () => selectFriend(f);
+            
+            let pressTimer = null;
+            div.onmousedown = div.ontouchstart = (e) => {
+                pressTimer = setTimeout(() => {
+                    if (confirm(`确定要从列表中移除好友 [${f}] 吗？`)) {
+                        friendsList = friendsList.filter(item => item !== f);
+                        if (activeFriend === f) {
+                            activeFriend = "";
+                            document.getElementById('currentChatTarget').innerText = "未选择好友";
+                            document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">选择左侧好友进行通信</div>';
+                        }
+                        renderFriendList();
+                    }
+                }, 800);
+            };
+            div.onmouseup = div.onmouseleave = div.ontouchend = () => {
+                clearTimeout(pressTimer);
+            };
+
+            listEl.appendChild(div);
+        });
+    }
+
+    async function selectFriend(f) {
+        activeFriend = f;
+        localClearedTime = 0;
+        document.getElementById('currentChatTarget').innerText = "与 [" + f + "] 通信中";
+        renderFriendList();
+        await loadHistoryMessages();
+    }
+
+    async function loadHistoryMessages() {
+        if (!activeFriend) return;
+        
+        let { data: data1 } = await supabaseClient.from('messages').select('*').eq('sender', myUsername).eq('receiver', activeFriend);
+        let { data: data2 } = await supabaseClient.from('messages').select('*').eq('sender', activeFriend).eq('receiver', myUsername);
+        
+        let allMsgs = [...(data1||[]), ...(data2||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+
+        if (localClearedTime > 0) {
+            allMsgs = allMsgs.filter(msg => new Date(msg.created_at).getTime() > localClearedTime);
+        }
+
+        const container = document.getElementById('chatMessages');
+        container.innerHTML = "";
+
+        if (allMsgs.length > 0) {
+            allMsgs.forEach(msg => {
+                const type = (msg.sender === myUsername) ? 'outgoing' : 'incoming';
+                appendMessageToUI(msg.id, msg.content, type, false);
+            });
+            container.scrollTop = container.scrollHeight;
+        } else {
+            container.innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">暂无云端加密消息</div>';
+        }
+    }
+
+    async function sendMessage() {
+        const input = document.getElementById('msgInput');
+        const text = input.value.trim();
+        if (!text) return;
+        if (!activeFriend) { alert("请先在左侧选择或添加好友！"); return; }
+
+        input.value = "";
+
+        let { data, error } = await supabaseClient.from('messages').insert([
+            { sender: myUsername, receiver: activeFriend, content: text }
+        ]).select();
+
+        if (data && data.length > 0) {
+            appendMessageToUI(data[0].id, text, 'outgoing', true);
+        } else {
+            loadHistoryMessages();
+        }
+    }
+
+    async function burnMessage(msgId, element) {
+        if (!confirm("确认彻底焚毁这条加密消息？双方屏幕上的记录将被同步抹除。")) return;
+        
+        let { error } = await supabaseClient.from('messages').delete().eq('id', msgId);
+        
+        if (!error) {
+            element.style.transform = "scale(0)";
+            element.style.transition = "transform 0.2s ease";
+            setTimeout(() => element.remove(), 200);
+        } else {
+            alert("焚毁失败: " + error.message);
+        }
+    }
+
+    function clearLocalScreen() {
+        localClearedTime = Date.now();
+        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center; box-shadow:none;">本地屏幕已安全清空</div>';
+    }
+
+    function startPollingMessages() {
+        if (pollInterval) clearInterval(pollInterval);
+        pollInterval = setInterval(async () => {
+            if (!myUsername) return;
+            let { data: incoming } = await supabaseClient.from('messages').select('*').eq('receiver', myUsername).order('created_at', { ascending: false }).limit(5);
+            if (incoming && incoming.length > 0) {
+                incoming.forEach(msg => {
+                    if (!friendsList.includes(msg.sender)) {
+                        friendsList.push(msg.sender);
+                        renderFriendList();
+                    }
+                });
+                if (activeFriend) {
+                    await loadHistoryMessages();
+                }
+            }
+        }, 3000);
+    }
+
+    function appendMessageToUI(msgId, text, type, scroll = true) {
+        const container = document.getElementById('chatMessages');
+        if (container.innerText.includes("暂无") || container.innerText.includes("本地屏幕已安全清空")) container.innerHTML = "";
+
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        div.innerText = text;
+        
+        if (msgId) {
+            div.ondblclick = () => burnMessage(msgId, div);
+        }
+
+        container.appendChild(div);
+        if (scroll) container.scrollTop = container.scrollHeight;
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter') sendMessage();
+    }
+</script>
+
+</body>
+</html>
