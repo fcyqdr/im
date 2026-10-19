@@ -6,22 +6,23 @@
     <title>科学计算器</title>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-        body { background-color: #121212; color: #fff; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; }
+        /* 核心修改：用 100dvh 代替 100vh，完美解决手机浏览器工具栏遮挡问题 */
+        body { background-color: #121212; color: #fff; display: flex; justify-content: center; align-items: center; height: 100dvh; overflow: hidden; }
         
-        .container { width: 100%; max-width: 420px; height: 100%; max-height: 750px; background: #1e1e1e; display: flex; flex-direction: column; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
+        .container { width: 100%; max-width: 420px; height: 100%; background: #1e1e1e; display: flex; flex-direction: column; position: relative; overflow: hidden; box-shadow: 0 8px 24px rgba(0,0,0,0.5); }
 
-        /* 计算器界面 */
-        #calc-screen { flex: 1; display: flex; flex-direction: column; padding: 20px; justify-content: flex-end; }
-        .display { background: #2b2b2b; height: 120px; border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 15px; margin-bottom: 20px; }
-        .history { font-size: 16px; color: #888; margin-bottom: 5px; min-height: 20px; }
-        .output { font-size: 40px; font-weight: bold; }
+        /* 计算器界面调整，防止溢出 */
+        #calc-screen { flex: 1; display: flex; flex-direction: column; padding: 15px; justify-content: flex-end; }
+        .display { background: #2b2b2b; height: 100px; border-radius: 8px; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding: 12px; margin-bottom: 15px; }
+        .history { font-size: 14px; color: #888; margin-bottom: 4px; min-height: 18px; }
+        .output { font-size: 36px; font-weight: bold; }
         
-        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; padding-bottom: 10px; }
-        button.key { background: #333; color: #fff; border: none; border-radius: 50%; width: 68px; height: 68px; font-size: 24px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
+        .keypad { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-bottom: 15px; }
+        button.key { background: #333; color: #fff; border: none; border-radius: 50%; width: 62px; height: 62px; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; margin: 0 auto; -webkit-tap-highlight-color: transparent; }
         button.key:active { background: #555; }
         button.operator { background: #ff9f0a; color: #fff; }
         button.function { background: #a5a5a5; color: #000; }
-        button.zero { grid-column: span 2; width: 150px; border-radius: 35px; }
+        button.zero { grid-column: span 2; width: 135px; border-radius: 30px; }
 
         /* 秘密 IM 系统 */
         #secret-system { display: none; flex: 1; flex-direction: column; background: #0f0f0f; position: relative; }
@@ -146,11 +147,9 @@
 </div>
 
 <script>
-    // ===== 配置你的 Supabase 凭证 =====
     const SUPABASE_URL = "https://xseuvesmmsgixhrjxayc.supabase.co";
     const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhzZXV2ZXNtbXNnaXhocmp4YXljIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0MjIwMzYsImV4cCI6MjEwNzk5ODAzNn0.u3g7CTte10sKFGOM7HXaoyz1jZGhczoiXPywHPsFBLE";
 
-    // 原生 Fetch 请求封装（摆脱外部 SDK 依赖，确保手机上绝对能点）
     async function sbRest(table, method, queryParams = "", data = null) {
         let url = `${SUPABASE_URL}/rest/v1/${table}${queryParams}`;
         let headers = {
@@ -173,7 +172,6 @@
         }
     }
 
-    // ===== 计算器伪装暗号逻辑 =====
     let currentInput = "0";
     let historyInput = "";
     let inputSequence = "";
@@ -197,7 +195,6 @@
     
     function calculate() {
         inputSequence += "=";
-        // 暗号：在计算器输入 1234= 解锁 IM 系统
         if (inputSequence.includes("1234=")) {
             document.getElementById('calc-screen').style.display = 'none';
             document.getElementById('secret-system').style.display = 'flex';
@@ -217,7 +214,6 @@
         clearCalc();
     }
 
-    // ===== 登录 / 注册切换逻辑 =====
     let currentAuthMode = 'login';
     function switchAuthMode(mode) {
         currentAuthMode = mode;
@@ -232,7 +228,6 @@
         }
     }
 
-    // ===== IM 即时通讯逻辑 =====
     let myUsername = "";
     let activeFriend = "";
     let friendsList = [];
@@ -263,8 +258,6 @@
         myUsername = u;
         document.getElementById('currentUserLabel').innerText = "我: " + u;
         document.getElementById('auth-panel').style.display = 'none';
-        
-        // 开启轮询拉取消息（每2秒同步一次，百分之百稳定抗弱网）
         startPollingMessages();
     }
 
@@ -333,20 +326,13 @@
         });
     }
 
-    // 智能轮询同步机制（确保任何手机、任何浏览器都能秒收消息，零断连）
     function startPollingMessages() {
         if (pollInterval) clearInterval(pollInterval);
         pollInterval = setInterval(async () => {
             if (!myUsername) return;
-            // 检查发给我的新消息
             let incoming = await sbRest('messages', 'GET', `?receiver=eq.${myUsername}&order=created_at.desc&limit=5`);
             if (incoming && incoming.length > 0) {
                 incoming.forEach(msg => {
-                    // 如果是当前聊天好友发来的
-                    if (msg.sender === activeFriend) {
-                        // 简单通过内容或时间去重，这里直接动态拉取最新聊天
-                    }
-                    // 如果是陌生人发来的，自动加到好友列表
                     if (!friendsList.includes(msg.sender)) {
                         friendsList.push(msg.sender);
                         renderFriendList();
