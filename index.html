@@ -115,7 +115,7 @@
         .message { max-width: 82%; padding: 10px 14px; border-radius: 14px; font-size: 14px; line-height: 1.45; word-break: break-all; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: relative; cursor: pointer; }
         .message.incoming { background: var(--msg-incoming); align-self: flex-start; color: var(--text-main); border-bottom-left-radius: 4px; }
         .message.outgoing { background: var(--msg-outgoing); align-self: flex-end; color: var(--msg-outgoing-text); border-bottom-right-radius: 4px; }
-        .message::after { content: "🔥双击焚烧"; position: absolute; bottom: -14px; right: 4px; font-size: 9px; color: var(--text-muted); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
+        .message::after { content: "🔥双击双方烧毁"; position: absolute; bottom: -14px; right: 4px; font-size: 9px; color: var(--text-muted); opacity: 0; transition: opacity 0.2s; pointer-events: none; }
         .message:hover::after { opacity: 0.7; }
         
         .chat-input-area { padding: 12px; background: var(--bg-panel); display: flex; gap: 10px; border-top: 1px solid var(--border-color); align-items: center; }
@@ -203,11 +203,11 @@
                 <div class="chat-header">
                     <h3 id="currentChatTarget">未选择好友</h3>
                     <div class="header-btn-group">
-                        <button class="btn-sm btn-burn" onclick="burnAllMessages()">🔥 焚毁会话</button>
+                        <button class="btn-sm btn-burn" onclick="clearLocalScreen()">🔥 清屏</button>
                     </div>
                 </div>
                 <div class="chat-messages" id="chatMessages">
-                    <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">选择左侧好友通信（双击气泡可单条焚毁）</div>
+                    <div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">选择左侧好友通信（双击任意消息可双方彻底销毁）</div>
                 </div>
                 <div class="chat-input-area">
                     <input type="text" id="msgInput" placeholder="输入加密消息..." onkeypress="handleKeyPress(event)">
@@ -423,7 +423,6 @@
 
         input.value = "";
 
-        // 发送到云端
         let res = await sbRest('messages', 'POST', "", {
             sender: myUsername,
             receiver: activeFriend,
@@ -433,26 +432,22 @@
         if (res && res.length > 0) {
             appendMessageToUI(res[0].id, text, 'outgoing', true);
         } else {
-            loadHistoryMessages(); // 兜底刷新
+            loadHistoryMessages();
         }
     }
 
-    // 焚毁单条消息
+    // 双击某条消息：直接删除云端数据库记录（双方同步销毁）
     async function burnMessage(msgId, element) {
-        if (!confirm("确认焚毁此条加密消息？销毁后双方将彻底抹除。")) return;
-        let res = await sbRest('messages', 'DELETE', `?id=eq.${msgId}`);
+        if (!confirm("确认彻底焚毁这条加密消息？双方屏幕上的记录将被同步抹除。")) return;
+        await sbRest('messages', 'DELETE', `?id=eq.${msgId}`);
         element.style.transform = "scale(0)";
         element.style.transition = "transform 0.2s ease";
         setTimeout(() => element.remove(), 200);
     }
 
-    // 焚毁当前会话全部消息
-    async function burnAllMessages() {
-        if (!activeFriend) return;
-        if (!confirm(`警告：确定要一键焚毁与 [${activeFriend}] 的所有云端聊天记录吗？此操作不可逆！`)) return;
-        
-        await sbRest('messages', 'DELETE', `?or=(and(sender.eq.${myUsername},receiver.eq.${activeFriend}),and(sender.eq.${activeFriend},receiver.eq.${myUsername}))`);
-        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">会话已彻底焚毁</div>';
+    // 右上角按钮：仅清空自己当前屏幕的本地视图（不影响云端和对方）
+    function clearLocalScreen() {
+        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">本地屏幕已清空</div>';
     }
 
     function startPollingMessages() {
@@ -476,13 +471,12 @@
 
     function appendMessageToUI(msgId, text, type, scroll = true) {
         const container = document.getElementById('chatMessages');
-        if (container.innerText.includes("暂无") || container.innerText.includes("已彻底焚毁")) container.innerHTML = "";
+        if (container.innerText.includes("暂无") || container.innerText.includes("本地屏幕已清空")) container.innerHTML = "";
 
         const div = document.createElement('div');
         div.className = `message ${type}`;
         div.innerText = text;
         
-        // 绑定双击焚毁单条消息事件
         if (msgId) {
             div.ondblclick = () => burnMessage(msgId, div);
         }
