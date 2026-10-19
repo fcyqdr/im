@@ -203,7 +203,7 @@
                 <div class="chat-header">
                     <h3 id="currentChatTarget">未选择好友</h3>
                     <div class="header-btn-group">
-                        <button class="btn-sm btn-burn" onclick="clearLocalScreen()">🔥 清屏</button>
+                        <button class="btn-sm btn-burn" onclick="clearLocalScreen()">🔥 强力清屏</button>
                     </div>
                 </div>
                 <div class="chat-messages" id="chatMessages">
@@ -315,6 +315,7 @@
     let activeFriend = "";
     let friendsList = [];
     let pollInterval = null;
+    let localClearedTime = 0; // 用于记录本地清屏时间戳，防止轮询立刻刷回来
 
     async function handleAuthSubmit() {
         const u = document.getElementById('usernameInput').value.trim();
@@ -324,7 +325,7 @@
         if (currentAuthMode === 'register') {
             let existing = await sbRest('users', 'GET', `?username=eq.${u}`);
             if (existing && existing.length > 0) {
-                alert("该代号已被注册，请换一个！");
+                alert("该代号已被注册，请换一个!");
                 return;
             }
             let res = await sbRest('users', 'POST', "", { username: u, password: p });
@@ -389,6 +390,7 @@
 
     async function selectFriend(f) {
         activeFriend = f;
+        localClearedTime = 0; // 切换好友时重置清屏标记
         document.getElementById('currentChatTarget').innerText = "与 [" + f + "] 通信中";
         renderFriendList();
         await loadHistoryMessages();
@@ -400,6 +402,11 @@
         let data2 = await sbRest('messages', 'GET', `?sender=eq.${activeFriend}&receiver=eq.${myUsername}&order=created_at.asc`);
         
         let allMsgs = [...(data1||[]), ...(data2||[])].sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+
+        // 如果用户刚刚点击了本地清屏，过滤掉清屏时间点之前的所有旧消息
+        if (localClearedTime > 0) {
+            allMsgs = allMsgs.filter(msg => new Date(msg.created_at).getTime() > localClearedTime);
+        }
 
         const container = document.getElementById('chatMessages');
         container.innerHTML = "";
@@ -436,18 +443,29 @@
         }
     }
 
-    // 双击某条消息：直接删除云端数据库记录（双方同步销毁）
+    // 双击某条消息：通过数据库 ID 彻底双向物理删除
     async function burnMessage(msgId, element) {
         if (!confirm("确认彻底焚毁这条加密消息？双方屏幕上的记录将被同步抹除。")) return;
-        await sbRest('messages', 'DELETE', `?id=eq.${msgId}`);
+        
+        // 发送云端删除请求
+        let res = await fetch(`${SUPABASE_URL}/rest/v1/messages?id=eq.${msgId}`, {
+            method: 'DELETE',
+            headers: {
+                "apikey": SUPABASE_KEY,
+                "Authorization": `Bearer ${SUPABASE_KEY}`,
+                "Content-Type": "application/json"
+            }
+        });
+
         element.style.transform = "scale(0)";
         element.style.transition = "transform 0.2s ease";
         setTimeout(() => element.remove(), 200);
     }
 
-    // 右上角按钮：仅清空自己当前屏幕的本地视图（不影响云端和对方）
+    // 本地清屏：记录当前时间戳，并阻止轮询再把旧消息拉回来
     function clearLocalScreen() {
-        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">本地屏幕已清空</div>';
+        localClearedTime = Date.now();
+        document.getElementById('chatMessages').innerHTML = '<div class="message incoming" style="background:transparent; color:var(--text-muted); text-align:center;">本地屏幕已安全清空</div>';
     }
 
     function startPollingMessages() {
@@ -471,7 +489,7 @@
 
     function appendMessageToUI(msgId, text, type, scroll = true) {
         const container = document.getElementById('chatMessages');
-        if (container.innerText.includes("暂无") || container.innerText.includes("本地屏幕已清空")) container.innerHTML = "";
+        if (container.innerText.includes("暂无") || container.innerText.includes("本地屏幕已安全清空")) container.innerHTML = "";
 
         const div = document.createElement('div');
         div.className = `message ${type}`;
